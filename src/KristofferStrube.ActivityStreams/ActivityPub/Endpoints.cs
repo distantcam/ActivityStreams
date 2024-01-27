@@ -63,6 +63,9 @@ public class Endpoints : IEndpointsOrLink
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public Dictionary<string, JsonElement>? ExtensionData { get; set; }
 
-    [JsonIgnore]
-    public Dictionary<string, Uri>? ExtensionUris => ExtensionData?.Where(kv => kv.Value.ValueKind is JsonValueKind.String  && Uri.TryCreate(kv.Value.Deserialize<string>(), new(), out var _)).Select(kv => (key: kv.Key, value: kv.Value.Deserialize<Uri>()!)).ToDictionary(kv => kv.key, kv => kv.value);
+    //[JsonIgnore]
+    //public Dictionary<string, Uri>? ExtensionUris => ExtensionData?
+    //    .Where(kv => kv.Value.ValueKind is JsonValueKind.String && Uri.TryCreate(kv.Value.Deserialize<string>(), new(), out var _))
+    //    .Select(kv => (key: kv.Key, value: kv.Value.Deserialize<Uri>()!))
+    //    .ToDictionary(kv => kv.key, kv => kv.value);
 }

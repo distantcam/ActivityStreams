@@ -13,11 +13,11 @@ public class TermDefinitionConverter : JsonConverter<ITermDefinition?>
         {
             if (doc.RootElement.ValueKind is JsonValueKind.String)
             {
-                return new ReferenceTermDefinition(doc.Deserialize<Uri>(options)!);
+                return new ReferenceTermDefinition((Uri?)doc.Deserialize(options.GetTypeInfo(typeof(Uri)))!);
             }
             else if (doc.RootElement.ValueKind is JsonValueKind.Object)
             {
-                return doc.Deserialize<ExpandedTermDefinition>(options);
+                return (ExpandedTermDefinition?)doc.Deserialize(options.GetTypeInfo(typeof(ExpandedTermDefinition)));
             }
             throw new JsonException("JSON element was neither an object nor a string.");
         }
@@ -29,10 +29,10 @@ public class TermDefinitionConverter : JsonConverter<ITermDefinition?>
         switch (value)
         {
             case ReferenceTermDefinition reference:
-                writer.WriteRawValue(Serialize(reference.Href, typeof(Uri), options));
+                writer.WriteRawValue(Serialize(reference.Href, options.GetTypeInfo(typeof(Uri))));
                 break;
             case ExpandedTermDefinition:
-                writer.WriteRawValue(Serialize(value, typeof(ExpandedTermDefinition), options));
+                writer.WriteRawValue(Serialize(value, options.GetTypeInfo(typeof(ExpandedTermDefinition))));
                 break;
         };
     }

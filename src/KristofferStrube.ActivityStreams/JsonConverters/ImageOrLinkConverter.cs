@@ -12,14 +12,14 @@ public class ImageOrLinkConverter : JsonConverter<IImageOrLink?>
         {
             if (doc.RootElement.ValueKind is JsonValueKind.String)
             {
-                return doc.Deserialize<ILink>(options);
+                return (ILink?)doc.Deserialize(options.GetTypeInfo(typeof(ILink)));
             }
             else if (doc.RootElement.TryGetProperty("type", out JsonElement type))
             {
                 return type.GetString() switch
                 {
-                    "Link" => doc.Deserialize<ILink>(options),
-                    "Image" => (Image?)doc.Deserialize<IObject>(options),
+                    "Link" => (ILink?)doc.Deserialize(options.GetTypeInfo(typeof(ILink))),
+                    "Image" => (Image?)doc.Deserialize(options.GetTypeInfo(typeof(IObject))),
                     _ => throw new JsonException("JSON element was not an Image or a Link."),
                 };
             }
@@ -38,21 +38,21 @@ public class ImageOrLinkConverter : JsonConverter<IImageOrLink?>
         string? matchingType = value.Type?.FirstOrDefault(t => t == "Link" || t == "Image" || ObjectTypes.Types.ContainsKey(t!), null);
         if (matchingType is null)
         {
-            writer.WriteRawValue(Serialize(value, typeof(object), options));
+            writer.WriteRawValue(Serialize(value, options.GetTypeInfo(typeof(object))));
         }
         else
         {
             if (matchingType == "Link")
             {
-                writer.WriteRawValue(Serialize(value, typeof(ILink), options));
+                writer.WriteRawValue(Serialize(value, options.GetTypeInfo(typeof(ILink))));
             }
             else if (matchingType == "Image")
             {
-                writer.WriteRawValue(Serialize(value, typeof(Image), options));
+                writer.WriteRawValue(Serialize(value, options.GetTypeInfo(typeof(Image))));
             }
             else
             {
-                writer.WriteRawValue(Serialize(value, ObjectTypes.Types[matchingType], options));
+                writer.WriteRawValue(Serialize(value, options.GetTypeInfo(ObjectTypes.Types[matchingType])));
             }
         }
     }

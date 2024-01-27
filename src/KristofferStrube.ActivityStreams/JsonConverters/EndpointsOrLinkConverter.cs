@@ -12,15 +12,15 @@ public class EndpointsOrLinkConverter : JsonConverter<IEndpointsOrLink?>
         {
             if (doc.RootElement.ValueKind is JsonValueKind.String)
             {
-                return doc.Deserialize<ILink>(options);
+                return (ILink?)doc.Deserialize(options.GetTypeInfo(typeof(ILink)));
             }
             else if (doc.RootElement.TryGetProperty("type", out JsonElement type) && type.GetString() is "Link")
             {
-                return doc.Deserialize<ILink>(options);
+                return (ILink?)doc.Deserialize(options.GetTypeInfo(typeof(ILink)));
             }
             else
             {
-                return doc.Deserialize<Endpoints>(options);
+                return (Endpoints?)doc.Deserialize(options.GetTypeInfo(typeof(Endpoints)));
             }
         }
         throw new JsonException($"Could not be parsed as a JsonDocument.");
@@ -30,11 +30,11 @@ public class EndpointsOrLinkConverter : JsonConverter<IEndpointsOrLink?>
     {
         if (value is Endpoints endpoints)
         {
-            writer.WriteRawValue(Serialize(endpoints, options));
+            writer.WriteRawValue(Serialize(endpoints, options.GetTypeInfo(typeof(Endpoints))));
         }
         else if (value is ILink link)
         {
-            writer.WriteRawValue(Serialize(link, options));
+            writer.WriteRawValue(Serialize(link, options.GetTypeInfo(typeof(ILink))));
         }
     }
 }

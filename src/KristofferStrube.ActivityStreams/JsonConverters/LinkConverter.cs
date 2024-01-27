@@ -12,14 +12,14 @@ public class LinkConverter : JsonConverter<ILink?>
         {
             if (doc.RootElement.ValueKind is JsonValueKind.String)
             {
-                return new Link { Href = doc.Deserialize<Uri>(options), Type = new List<string>() { "Link" } };
+                return new Link { Href = (Uri?)doc.Deserialize(options.GetTypeInfo(typeof(Uri))), Type = new List<string>() { "Link" } };
             }
             else if (doc.RootElement.TryGetProperty("type", out JsonElement type))
             {
                 Link? link = type.GetString() switch
                 {
-                    "Link" => doc.Deserialize<Link>(options),
-                    "Mention" => doc.Deserialize<Mention>(options),
+                    "Link" => (Link?)doc.Deserialize(options.GetTypeInfo(typeof(Link))),
+                    "Mention" => (Mention?)doc.Deserialize(options.GetTypeInfo(typeof(Mention))),
                     _ => throw new JsonException("JSON element was not a Link or a Mention."),
                 };
                 if (link is null)
@@ -28,7 +28,7 @@ public class LinkConverter : JsonConverter<ILink?>
                 }
                 return link;
             }
-            else if (doc.Deserialize<Link?>(options) is Link link)
+            else if (doc.Deserialize(options.GetTypeInfo(typeof(Link))) is Link link)
             {
                 link.Type = new List<string>() { "Link" };
                 return link;
@@ -68,7 +68,7 @@ public class LinkConverter : JsonConverter<ILink?>
             {
                 value.Type = value.Type.Append("Link");
             }
-            writer.WriteRawValue(Serialize(value, typeof(Link), options));
+            writer.WriteRawValue(Serialize(value, options.GetTypeInfo(typeof(Link))));
         }
     }
 }

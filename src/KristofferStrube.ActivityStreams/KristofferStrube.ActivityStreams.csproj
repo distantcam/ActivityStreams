@@ -1,9 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <IsAotCompatible>true</IsAotCompatible>
+    <WarningsAsErrors>IL2026;IL3050</WarningsAsErrors>
     <Title>ActivityStreams</Title>
     <Description>A .NET implementation of the ActivityStreams+ActivityPub vocabulary in the form of classes that can be serialized using System.Text.Json</Description>
     <PackageId>KristofferStrube.ActivityStreams</PackageId>

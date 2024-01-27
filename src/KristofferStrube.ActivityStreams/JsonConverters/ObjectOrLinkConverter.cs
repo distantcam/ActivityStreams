@@ -12,7 +12,7 @@ public class ObjectOrLinkConverter : JsonConverter<IObjectOrLink?>
         {
             if (doc.RootElement.ValueKind is JsonValueKind.String)
             {
-                return doc.Deserialize<ILink>(options);
+                return (ILink?)doc.Deserialize(options.GetTypeInfo(typeof(ILink)));
             }
             else if (doc.RootElement.TryGetProperty("type", out JsonElement type))
             {
@@ -32,13 +32,13 @@ public class ObjectOrLinkConverter : JsonConverter<IObjectOrLink?>
                 }
                 return matchingType switch
                 {
-                    "Link" or "Mention" => doc.Deserialize<ILink>(options),
-                    _ => doc.Deserialize<IObject>(options),
+                    "Link" or "Mention" => (ILink?)doc.Deserialize(options.GetTypeInfo(typeof(ILink))),
+                    _ => (IObject?)doc.Deserialize(options.GetTypeInfo(typeof(IObject))),
                 };
             }
             else
             {
-                ObjectOrLink? anonymousObject = doc.Deserialize<ObjectOrLink>(options);
+                ObjectOrLink? anonymousObject = (ObjectOrLink?)doc.Deserialize(options.GetTypeInfo(typeof(ObjectOrLink)));
                 if (anonymousObject is null)
                 {
                     return null;
@@ -57,15 +57,15 @@ public class ObjectOrLinkConverter : JsonConverter<IObjectOrLink?>
         }
         else if (value is ILink)
         {
-            writer.WriteRawValue(Serialize(value, typeof(ILink), options));
+            writer.WriteRawValue(Serialize(value, options.GetTypeInfo(typeof(ILink))));
         }
         else if (value is IObject)
         {
-            writer.WriteRawValue(Serialize(value, typeof(IObject), options));
+            writer.WriteRawValue(Serialize(value, options.GetTypeInfo(typeof(IObject))));
         }
         else
         {
-            writer.WriteRawValue(Serialize(value, typeof(ObjectOrLink), options));
+            writer.WriteRawValue(Serialize(value, options.GetTypeInfo(typeof(ObjectOrLink))));
         }
     }
 }

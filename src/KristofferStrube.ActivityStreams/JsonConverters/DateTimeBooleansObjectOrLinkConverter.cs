@@ -23,23 +23,23 @@ public class DateTimeBooleanObjectOrLinkConverter : JsonConverter<DateTimeBoolea
                     {
                         return new() { Value = datetime };
                     }
-                    else if ((new object[] { "true", "false", "1", "0" }).Contains(doc.Deserialize<string>(options)))
+                    else if ((new object[] { "true", "false", "1", "0" }).Contains(doc.Deserialize(options.GetTypeInfo(typeof(string)))))
                     {
-                        return new() { Value = doc.Deserialize<string>(options) is "true" or "1" };
+                        return new() { Value = doc.Deserialize(options.GetTypeInfo(typeof(string))) is "true" or "1" };
                     }
-                    return new() { Value = doc.Deserialize<ILink>(options)! };
+                    return new() { Value = doc.Deserialize(options.GetTypeInfo(typeof(ILink)))! };
                 case JsonValueKind.Object:
                     if (doc.RootElement.TryGetProperty("type", out JsonElement type))
                     {
                         return type.GetString() switch
                         {
-                            "Link" => new() { Value = doc.Deserialize<ILink>(options)! },
-                            _ => new() { Value = doc.Deserialize<IObject>(options)! }
+                            "Link" => new() { Value = doc.Deserialize(options.GetTypeInfo(typeof(ILink)))! },
+                            _ => new() { Value = doc.Deserialize(options.GetTypeInfo(typeof(IObject)))! }
                         };
                     }
                     throw new JsonException("JSON element did not have a type property.");
                 default:
-                    return new() { Value = doc.Deserialize<IObjectOrLink>(options)! };
+                    return new() { Value = doc.Deserialize(options.GetTypeInfo(typeof(IObjectOrLink)))! };
             }
         }
         throw new JsonException("Could not be parsed as a JsonDocument.");
@@ -53,23 +53,23 @@ public class DateTimeBooleanObjectOrLinkConverter : JsonConverter<DateTimeBoolea
         }
         else if (value.Value is DateTime)
         {
-            writer.WriteRawValue(Serialize(value, typeof(DateTime), options));
+            writer.WriteRawValue(Serialize(value, options.GetTypeInfo(typeof(DateTime))));
         }
         else if (value.Value is bool)
         {
-            writer.WriteRawValue(Serialize(value, typeof(bool), options));
+            writer.WriteRawValue(Serialize(value, options.GetTypeInfo(typeof(bool))));
         }
         else if (value.Value is IObject)
         {
-            writer.WriteRawValue(Serialize(value, typeof(IObject), options));
+            writer.WriteRawValue(Serialize(value, options.GetTypeInfo(typeof(IObject))));
         }
         else if (value.Value is ILink)
         {
-            writer.WriteRawValue(Serialize(value, typeof(ILink), options));
+            writer.WriteRawValue(Serialize(value, options.GetTypeInfo(typeof(ILink))));
         }
         else
         {
-            writer.WriteRawValue(Serialize(value, typeof(ObjectOrLink), options));
+            writer.WriteRawValue(Serialize(value, options.GetTypeInfo(typeof(ObjectOrLink))));
         }
     }
 }

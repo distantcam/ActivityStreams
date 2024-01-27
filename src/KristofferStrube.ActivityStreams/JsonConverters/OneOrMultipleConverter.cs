@@ -12,9 +12,9 @@ public class OneOrMultipleConverter<T> : JsonConverter<IEnumerable<T>?>
         {
             if (doc.RootElement.ValueKind is JsonValueKind.Array)
             {
-                return doc.RootElement.EnumerateArray().Select(element => element.Deserialize<T>()!);
+                return doc.RootElement.EnumerateArray().Select(element => (T?)element.Deserialize(options.GetTypeInfo(typeof(T)))!);
             }
-            return Enumerable.Range(0, 1).Select(_ => doc.Deserialize<T>()!);
+            return Enumerable.Range(0, 1).Select(_ => (T?)doc.Deserialize(options.GetTypeInfo(typeof(T)))!);
         }
         throw new JsonException("Could not be parsed as a JsonDocument.");
     }
@@ -23,14 +23,14 @@ public class OneOrMultipleConverter<T> : JsonConverter<IEnumerable<T>?>
     {
         if (value?.Count() is 1)
         {
-            writer.WriteRawValue(Serialize(value.First(), options));
+            writer.WriteRawValue(Serialize(value.First(), options.GetTypeInfo(typeof(T))));
         }
         else if (value is not null)
         {
             writer.WriteStartArray();
             foreach (T element in value)
             {
-                writer.WriteRawValue(Serialize(element, options));
+                writer.WriteRawValue(Serialize(element, options.GetTypeInfo(typeof(T))));
             }
             writer.WriteEndArray();
         }

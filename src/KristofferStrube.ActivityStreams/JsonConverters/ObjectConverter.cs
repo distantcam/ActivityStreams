@@ -24,11 +24,11 @@ public class ObjectConverter : JsonConverter<IObject?>
                 IObject? result = null;
                 if (matchingType is not null && ObjectTypes.Types.TryGetValue(matchingType!, out Type? value))
                 {
-                    result = (IObject?)doc.Deserialize(value, options);
+                    result = (IObject?)doc.Deserialize(options.GetTypeInfo(value));
                 }
                 else if (matchingType is not null)
                 {
-                    result = doc.Deserialize<Object?>(options);
+                    result = (IObject?)doc.Deserialize(options.GetTypeInfo(typeof(Object)));
                 }
                 if (result is not null)
                 {
@@ -54,7 +54,7 @@ public class ObjectConverter : JsonConverter<IObject?>
         string? matchingType = ObjectTypes.Types.Keys.FirstOrDefault(k => value.GetType().IsEquivalentTo(ObjectTypes.Types[k!]), null);
         if (matchingType is null)
         {
-            writer.WriteRawValue(Serialize(value, typeof(object), options));
+            writer.WriteRawValue(Serialize(value, options.GetTypeInfo(typeof(object))));
         }
         else
         {
@@ -66,7 +66,7 @@ public class ObjectConverter : JsonConverter<IObject?>
             {
                 value.Type = value.Type.Append(matchingType);
             }
-            writer.WriteRawValue(Serialize(value, ObjectTypes.Types[matchingType], options));
+            writer.WriteRawValue(Serialize(value, options.GetTypeInfo(ObjectTypes.Types[matchingType])));
         }
     }
 }

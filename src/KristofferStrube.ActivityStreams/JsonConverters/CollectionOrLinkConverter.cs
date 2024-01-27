@@ -12,14 +12,14 @@ public class CollectionOrLinkConverter : JsonConverter<ICollectionOrLink?>
         {
             if (doc.RootElement.ValueKind is JsonValueKind.String)
             {
-                return doc.Deserialize<ILink>(options);
+                return (ILink?)doc.Deserialize(options.GetTypeInfo(typeof(ILink)));
             }
             else if (doc.RootElement.TryGetProperty("type", out JsonElement type))
             {
                 return type.GetString() switch
                 {
-                    "Link" => doc.Deserialize<ILink>(options),
-                    "Collection" => (Collection?)doc.Deserialize<IObject>(options),
+                    "Link" => (ILink?)doc.Deserialize(options.GetTypeInfo(typeof(ILink))),
+                    "Collection" => (Collection?)doc.Deserialize(options.GetTypeInfo(typeof(IObject))),
                     _ => throw new JsonException("JSON element was not an CollectionPage or a Link."),
                 };
             }
@@ -36,15 +36,15 @@ public class CollectionOrLinkConverter : JsonConverter<ICollectionOrLink?>
         }
         else if (value is ILink)
         {
-            writer.WriteRawValue(Serialize(value, typeof(ILink), options));
+            writer.WriteRawValue(Serialize(value, options.GetTypeInfo(typeof(ILink))));
         }
         else if (value is CollectionPage)
         {
-            writer.WriteRawValue(Serialize(value, typeof(CollectionPage), options));
+            writer.WriteRawValue(Serialize(value, options.GetTypeInfo(typeof(CollectionPage))));
         }
         else
         {
-            writer.WriteRawValue(Serialize(value, typeof(ObjectOrLink), options));
+            writer.WriteRawValue(Serialize(value, options.GetTypeInfo(typeof(ObjectOrLink))));
         }
     }
 }

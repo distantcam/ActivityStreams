@@ -220,8 +220,8 @@ public class ActivityPubIntegrationTests
         // Assert
         payload.Should().BeAssignableTo<Person>();
         payload.As<Person>().Endpoints.As<Endpoints>().SharedInbox.Should().Be(new Uri("https://https://hachyderm.io/inbox"));
-        payload.As<Person>().Endpoints.As<Endpoints>().ExtensionUris.Keys.Should().HaveCount(1);
-        payload.As<Person>().Endpoints.As<Endpoints>().ExtensionUris["extraEndpoint"].Should().Be(new Uri("https://kristoffer-strube.dk/API/ActivityPub/RealEndpoint"));
+        //payload.As<Person>().Endpoints.As<Endpoints>().ExtensionUris.Keys.Should().HaveCount(1);
+        //payload.As<Person>().Endpoints.As<Endpoints>().ExtensionUris["extraEndpoint"].Should().Be(new Uri("https://kristoffer-strube.dk/API/ActivityPub/RealEndpoint"));
     }
 }
 
